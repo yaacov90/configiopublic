@@ -1,0 +1,54 @@
+version_define="true"
+if [ $# -eq 0 ]
+then
+  version_define="false"
+elif [ $# -eq 1 ]
+then
+  version_fe=$1
+  version_be=$1
+elif [ $# -eq 2 ]
+then
+  version_fe=$1
+  version_be=$2
+fi
+
+if [ "${version_define}" == "true" ]
+then
+  image_fe="configo_fe_${version_fe}"
+  image_be="configo_be_${version_be}"
+
+  if [ ! -f "${image_fe}" ]
+  then
+    echo " Image ${image_fe} not exist. So exit"
+    exit -1
+  fi
+
+  if [ ! -f "${image_be}" ]
+  then
+    echo " Image ${image_be} not exist. So exit"
+    exit -1
+  fi
+
+  docker load -i ${image_fe}
+  docker load -i ${image_be}
+fi
+
+#cd ~/doccompv2
+./shutdown.sh
+
+if [ "${version_define}" == "true" ]
+then
+  perl -pe "s|image: configo_fe(.+)|image: ${image_fe}|" -pi docker-compose.yml
+  perl -pe "s|image: configo_be(.+)|image: ${image_be}|" -pi docker-compose.yml
+fi
+
+./startup.sh
+docker exec configo_fe /bin/sh -c "perl -pe 's|\"CONFIGO_BE_HOST\":(.+)|\"CONFIGO_BE_HOST\":\"161.97.143.5\",|' -pi /usr/local/apache2/htdocs/assets/env.txt"
+docker exec configo_fe /bin/sh -c "chmod -R 755 htdocs"
+
+jwt=`curl -s --location --request POST 'http://localhost:3000/auth/login' --header 'Content-Type: application/json' --data-raw '{"username": "admin","password": "admin"}' | awk -F"jwtticket\":\"" '{print $2}' | sed 's|\"\}$||'`
+echo " JWT ${jwt}"
+curl --location --request POST 'http://localhost:3000/git/key' --header 'jwtticket: '"$jwt"'' --header 'Content-Type: application/json' --data-raw '{"key": "LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcEFJQkFBS0NBUUVBb1NJSXFoekFuenJBTGpvbS8vRUp1NFFoRUluVGNEWCt2Ri82MlFxQ3lCVlZ5SFdqCnprc1BxMVVLYVFyNHRkNEFodmFWcXR0bXMrYWlJZnEwcDBBejB6K29FdnRDcy9iZXpFS3JDZ3liaktZMm5HYmoKZVRBeXF1MTNtVkxDbTNjUEJYR2QxVXJod3JQcS9QY0dtRGVaYzdhV2M2UjJvaHdTdytVa1I2Tkd4QkdsWEQvOApBQzU4d2pDczF4TUY1QXVDaUpEdUpSckJ4Ni9aQnE3U0g3NXMrd0hVVzFLVVVVd09xbXBJUVZLVlM1djJZUW1NCkVVWC9xeEZIN3R2TTJMNVJGellkWEtodnQwVHVrZVlOU0k5TlVBK2JrTUNqcy8zbElaUjZaSjVsZkJaV08wbWIKdkN6ajlKZ0JIc3UyWWhjMTVDbU5makdLYkZCbTVIczE5UVlPT1FJREFRQUJBb0lCQVFDZXJ5S3pUTitSc0UwaworVllCQmtMY2JYSVdsSFVxODdIcmwrWTFLcm5EQytmUUk3SnU3ZEwvbXg5R2RXeWJ4b2JrWXlEZ0EzUHdSWGgwCldDN2k2MEplanprWmdHS2ZVc2IxaDg1amRpa1Y2WGFzcmxMa3ZVZVl0NFhwOCt2OUtOSWRQVmYvZnVBNFcvRlcKc0h2SkdqQkFHWmV2U1U4ZnROL3lGYzZWMGtGVndxN1JvdFA0WkJIcVVPMDVTOEt5SUZJSXNjb0F2aXFydERibApmZHlmeHlKV2ZZUkZyRkMxS3FjWEIwQ2FLejVMbXU4dEthV20xQ0pOaEpsSGtBNUk1UEJBdSsxNXJOTnZIMThkCmFVVGF0cE5SM3lsTjNYM2NzV0VNMkV4ZFlnWjRSZ1RhVVMrTmNZNllaQVJrMUkrQnpaRWxKZUprbElBc1FkZnkKOG5GYTUzWlJBb0dCQU5EelJITWtIZGNVK25qOHZ4TTVBb2hNK2s4dG1lekZsNDhHV2Z3NWZyY2FuWnIwT0tvdwp0K1J3Q0g2QzNySU1LVXFSb0hXdlR5RGRpTVp5cG5aSnhTWTlURVJkaVdDV2UvYVVCRUtsMjZCeXMwbDNxcFk5Cng2dkhYSzJ6MEJDSlVpUGhFWVhwU1c5ampjNC9CYmUweGVJZG92TUNWYjZtVHRUNDFmbFBiN2FsQW9HQkFNVnEKWWxYUGJvRXE3UG16RkdxLzN2R3phWVQ0OEQyYnhyaGRsSUpEaW8ybmJ2MThCcWZrcWU2UzEwS3lJeTBVa01VRApSTktlR3RWemlNM1kyQTBob2ZmSXdmemM2OVRwa1kxZHJMb2ZpbldqUXdhYnByb0t6SCt2VzF5ejI4NTN4N0hTClVkZ1NQcGZBMm14bWc3M1U2eXZHVnRsVnJZRVpBU1VQd0MwTW5ma0ZBb0dCQU1RU296YlF1MWVyRGVjZWRVYmEKaG0vVW5FWlVhazV1bEd2WDcvVHBGdWxIaG9Gemp3RFZPcHFZTHNCWW1oVEZxTEdhdWRIMU1mR0xNTi9Ya2pFSgp4SUMvb0tPK2lqMGl1U3lIZFAvOWwzeVdaWHNaV2ZBbUJRcEN4OHNRSXJ5QnY1eC9oT3YrSDdUdzNJNmZRUVJFCkZEUzh6cjN1Z1B1b0grMWxtNVNaWUNFcEFvR0FXY2x6NWhGTThpU0MyV0tRZzZpMmpubUtJWGRUVk1IMzFMeUQKSWVmMEtVOGdsTnVHNzI5NXRrOUU1a204NC9ENWt4RlVpUEp0dyswaktIUmFkMFozc3dtMDZQdlZxdVY4Vks1cApNOUhLbUl4am5LcklYczh3aVZaSkdGV1pRRU9NS0owK3FpWktINTBQK3NONVlhcG9OMldpOUlBYVJLQUp2RUI0CnFFU1h5TDBDZ1lBQ1Z3U2dXT2VxSnN4bW5QNU1mZ1RKR2RubjU5V3NNU2JMeEV0dGVJKzlEa1JrSGVTaFlQbVQKYk5mZ1FZRC9LN0k0RTZKeUNJU2ZWaTN4OFBsSWU1RmxWa0tLVEdhbUdJUWplWlJsQlN3Si91ZDl4T2ZBUEJkKwplTVYrWGZ0WUdvOWNGWmZjeCswMmdMZUJ0N3hFejU3LzVYSXBmWElNanMwVGRBQ0dHMHhmZEE9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo="}'
+
+#docker exec configo_be /bin/sh -c "apk add git openssh"
+
