@@ -1,0 +1,30 @@
+version: '3.5'
+services:
+  configiusfe:
+    image: configius_fe
+    container_name: configius_fe
+    ports: 
+      - "4200:80"
+  configiusbe:
+    image: configius_be
+    container_name: configius_be
+    ports:
+      - "3200:3000"
+    environment:
+      ENV_LOG_ACTIVE_SINCE_MINUTES: 120
+      ENV_GIT_WORK_DIR: /tmp/git
+      ENV_GIT_REPONAME: git@github.com:yaacov90/configius_test1.git
+      ENV_GIT_KEY_DIR: /tmp/git
+      ENV_GIT_KEY_FILE_NAME: git_key_file
+      GIT_SSH_COMMAND: ssh -i /tmp/git/git_key_file -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+    volumes:
+      - git_work_dir:/tmp/git
+volumes:
+  git_work_dir:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/cius/action_work_dir/TEST1
+      o: bind
+
+
