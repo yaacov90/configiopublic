@@ -11,7 +11,7 @@ services:
     ports:
       - "3200:3000"
     environment:
-      ENV_LOG_ACTIVE_SINCE_MINUTES: 120
+      ENV_LOG_ACTIVE_SINCE_MINUTES: 130
       ENV_GIT_WORK_DIR: /tmp/git
       ENV_GIT_REPONAME: git@github.com:yaacov90/configius_test1.git
       ENV_GIT_KEY_DIR: /tmp/git
