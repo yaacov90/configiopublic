@@ -1,0 +1,31 @@
+version: '3.5'
+services:
+  configiusfe:
+    image: configo_fe
+    command: ['sh', '-c', 'echo -e "{\n  \"CONFIGO_BE_HOST\":\"161.97.143.5\",\n  \"CONFIGO_BE_PORT\":\"3000\"\n}" > /usr/local/apache2/htdocs/assets/env.txt && /usr/local/apache2/bin/apachectl start && chmod -R 755 /usr/local/apache2/htdocs && while :; do echo "."; sleep 5 ; done']
+    container_name: configius-fe-TEST-DOCKER1
+    ports: 
+      - "26100:80"
+  configiusbe:
+    image: configo_be
+    container_name: configius-be-TEST-DOCKER1
+    ports:
+      - "25100:3000"
+    environment:
+      ENV_LOG_ACTIVE_SINCE_MINUTES: 110
+      ENV_GIT_WORK_DIR: /tmp/git
+      ENV_GIT_REPONAME: git@github.com:yaacov90/configius_test1.git
+      ENV_GIT_KEY_DIR: /tmp/git
+      ENV_GIT_KEY_FILE_NAME: git_key_file
+      GIT_SSH_COMMAND: ssh -i /tmp/git/git_key_file -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+    volumes:
+      - git_work_dir:/tmp/git
+volumes:
+  git_work_dir:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/cius/action_work_dir/TEST1
+      o: bind
+
+
