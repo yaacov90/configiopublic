@@ -34,7 +34,7 @@ then
 fi
 
 #cd ~/doccompv2
-./shutdown.sh
+./shutdown_docker.sh
 
 if [ "${version_define}" == "true" ]
 then
@@ -42,7 +42,7 @@ then
   perl -pe "s|image: configo_be(.+)|image: ${image_be}|" -pi docker-compose.yml
 fi
 
-./startup.sh
+./startup_docker.sh
 
 jwt=`curl -s --location --request POST 'http://localhost:3000/auth/login' --header 'Content-Type: application/json' --data-raw '{"username": "admin","password": "admin"}' | awk -F"jwtticket\":\"" '{print $2}' | sed 's|\"\}$||'`
 echo " JWT ${jwt}"
