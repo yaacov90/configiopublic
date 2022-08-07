@@ -1,14 +1,14 @@
 version: '3.5'
 services:
-  configiusfe:
+  configiusfe1:
     image: configo_fe
     command: ['sh', '-c', 'echo -e "{\n  \"CONFIGO_BE_HOST\":\"161.97.143.5\",\n  \"CONFIGO_BE_PORT\":\"3000\"\n}" > /usr/local/apache2/htdocs/assets/env.txt && /usr/local/apache2/bin/apachectl start && chmod -R 755 /usr/local/apache2/htdocs && while :; do echo "."; sleep 5 ; done']
-    container_name: configius-fe-TEST-DOCKER1
+    container_name: configius_fe_1
     ports: 
       - "26100:80"
-  configiusbe:
+  configiusbe1:
     image: configo_be
-    container_name: configius-be-TEST-DOCKER1
+    container_name: configius_be_1
     ports:
       - "25100:3000"
     environment:
