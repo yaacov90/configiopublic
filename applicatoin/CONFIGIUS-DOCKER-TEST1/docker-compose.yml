@@ -18,14 +18,3 @@ services:
       ENV_GIT_KEY_DIR: /tmp/git
       ENV_GIT_KEY_FILE_NAME: git_key_file
       GIT_SSH_COMMAND: ssh -i /tmp/git/git_key_file -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
-    volumes:
-      - git_work_dir:/tmp/git
-volumes:
-  git_work_dir:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/cius2/action_work_dir/CONFIGIUS-DOCKER-TEST1/VOLUME
-      o: bind
-
-
