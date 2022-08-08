@@ -1,10 +1,10 @@
 #cd ~/doccompv2
-./shutdown_docker.sh
+/home/cius2/action_work_dir/CONFIGIUS-DOCKER-TEST1/shutdown_docker.sh
 
 #perl -pe "s|image: configo_fe(.+)|image: ${image_fe}|" -pi docker-compose.yml
 #perl -pe "s|image: configo_be(.+)|image: ${image_be}|" -pi docker-compose.yml
 
-./startup_docker.sh
+/home/cius2/action_work_dir/CONFIGIUS-DOCKER-TEST1/startup_docker.sh
 
 jwt=`curl -s --location --request POST 'http://localhost:3000/auth/login' --header 'Content-Type: application/json' --data-raw '{"username": "admin","password": "admin"}' | awk -F"jwtticket\":\"" '{print $2}' | sed 's|\"\}$||'`
 echo " JWT ${jwt}"
