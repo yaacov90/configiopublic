@@ -1,46 +1,8 @@
-version_define="true"
-if [ $# -eq 0 ]
-then
-  version_define="false"
-elif [ $# -eq 1 ]
-then
-  version_fe=$1
-  version_be=$1
-elif [ $# -eq 2 ]
-then
-  version_fe=$1
-  version_be=$2
-fi
-
-if [ "${version_define}" == "true" ]
-then
-  image_fe="configo_fe_${version_fe}"
-  image_be="configo_be_${version_be}"
-
-  if [ ! -f "${image_fe}" ]
-  then
-    echo " Image ${image_fe} not exist. So exit"
-    exit -1
-  fi
-
-  if [ ! -f "${image_be}" ]
-  then
-    echo " Image ${image_be} not exist. So exit"
-    exit -1
-  fi
-
-  docker load -i ${image_fe}
-  docker load -i ${image_be}
-fi
-
 #cd ~/doccompv2
 ./shutdown_docker.sh
 
-if [ "${version_define}" == "true" ]
-then
-  perl -pe "s|image: configo_fe(.+)|image: ${image_fe}|" -pi docker-compose.yml
-  perl -pe "s|image: configo_be(.+)|image: ${image_be}|" -pi docker-compose.yml
-fi
+#perl -pe "s|image: configo_fe(.+)|image: ${image_fe}|" -pi docker-compose.yml
+#perl -pe "s|image: configo_be(.+)|image: ${image_be}|" -pi docker-compose.yml
 
 ./startup_docker.sh
 
