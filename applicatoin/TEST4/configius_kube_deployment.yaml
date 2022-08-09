@@ -1,0 +1,109 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: configius-test3
+  name: configius-test3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: configius-fe
+  namespace: configius-test3
+  name: configius-fe
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: configius-fe
+  template:
+    metadata:
+      annotations:
+      labels:
+        app: configius-fe
+    spec:
+      containers:
+      - name: configius-fe
+        image: localhost:5000/configo_fe_035:registry
+        command: ['sh', '-c', 'echo -e "{\n  \"CONFIGO_BE_HOST\":\"161.97.143.5\",\n  \"CONFIGO_BE_PORT\":\"23400\"\n}" > /usr/local/apache2/htdocs/assets/env.txt && /usr/local/apache2/bin/apachectl start && chmod -R 755 /usr/local/apache2/htdocs && while :; do echo "."; sleep 5 ; done']
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+      restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: configius-be
+  namespace: configius-test3
+  name: configius-be
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: configius-be
+  template:
+    metadata:
+      annotations:
+      labels:
+        app: configius-be
+    spec:
+      containers:
+      - name: configius-be
+        image: localhost:5000/configo_be_028:registry
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: ENV_LOG_ACTIVE_SINCE_MINUTES
+          value: "130"
+        - name: ENV_GIT_WORK_DIR
+          value: "/tmp"
+        - name: ENV_GIT_REPONAME
+          value: "git@github.com:yaacov90/configius_test1.git"
+        - name: ENV_GIT_KEY_DIR
+          value: "/tmp"
+        - name: ENV_GIT_KEY_FILE_NAME
+          value: "git_key_file"
+        - name: GIT_SSH_COMMAND
+          value: "ssh -i /tmp/git_key_file -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+        ports:
+        - containerPort: 3000
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: configius-fe
+  namespace: configius-test3
+  labels:
+    app: configius-fe
+spec:
+  ports:
+    - name: "4200"
+      port:  24400
+      targetPort: 80
+  type: LoadBalancer
+  externalIPs:
+    - 161.97.143.5
+  selector:
+    app: configius-fe
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: configius-be
+  namespace: configius-test3
+  labels:
+    app: configius-be
+spec:
+  ports:
+    - name: "3000"
+      port: 23400 
+      targetPort: 3000
+  type: LoadBalancer
+  externalIPs:
+    - 161.97.143.5
+  selector:
+    app: configius-be
+
