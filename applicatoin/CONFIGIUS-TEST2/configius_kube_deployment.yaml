@@ -2,15 +2,15 @@ apiVersion: v1
 kind: Namespace
 metadata:
   labels:
-    app: configius-test2
-  name: configius-test2
+    app: configius-test5
+  name: configius-test5
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
     app: configius-fe
-  namespace: configius-test2
+  namespace: configius-test5
   name: configius-fe
 spec:
   replicas: 2
@@ -26,7 +26,7 @@ spec:
       containers:
       - name: configius-fe
         image: localhost:5000/configo_fe_035:registry
-        command: ['sh', '-c', 'echo -e "{\n  \"CONFIGO_BE_HOST\":\"161.97.143.5\",\n  \"CONFIGO_BE_PORT\":\"23200\"\n}" > /usr/local/apache2/htdocs/assets/env.txt && /usr/local/apache2/bin/apachectl start && chmod -R 755 /usr/local/apache2/htdocs && while :; do echo "."; sleep 5 ; done']
+        command: ['sh', '-c', 'echo -e "{\n  \"CONFIGO_BE_HOST\":\"161.97.143.5\",\n  \"CONFIGO_BE_PORT\":\"23500\"\n}" > /usr/local/apache2/htdocs/assets/env.txt && /usr/local/apache2/bin/apachectl start && chmod -R 755 /usr/local/apache2/htdocs && while :; do echo "."; sleep 5 ; done']
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
@@ -37,7 +37,7 @@ kind: Deployment
 metadata:
   labels:
     app: configius-be
-  namespace: configius-test2
+  namespace: configius-test5
   name: configius-be
 spec:
   replicas: 2
@@ -56,7 +56,7 @@ spec:
         imagePullPolicy: IfNotPresent
         env:
         - name: ENV_LOG_ACTIVE_SINCE_MINUTES
-          value: "120"
+          value: "130"
         - name: ENV_GIT_WORK_DIR
           value: "/tmp"
         - name: ENV_GIT_REPONAME
@@ -75,13 +75,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: configius-fe
-  namespace: configius-test2
+  namespace: configius-test5
   labels:
     app: configius-fe
 spec:
   ports:
     - name: "4200"
-      port:  24200
+      port:  24500
       targetPort: 80
   type: LoadBalancer
   externalIPs:
@@ -93,13 +93,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: configius-be
-  namespace: configius-test2
+  namespace: configius-test5
   labels:
     app: configius-be
 spec:
   ports:
     - name: "3000"
-      port: 23200 
+      port: 23500 
       targetPort: 3000
   type: LoadBalancer
   externalIPs:
