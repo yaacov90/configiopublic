@@ -56,7 +56,7 @@ spec:
         imagePullPolicy: IfNotPresent
         env:
         - name: ENV_LOG_ACTIVE_SINCE_MINUTES
-          value: "130"
+          value: "140"
         - name: ENV_GIT_WORK_DIR
           value: "/tmp"
         - name: ENV_GIT_REPONAME
