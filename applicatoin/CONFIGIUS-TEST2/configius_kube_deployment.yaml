@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: configius-fe
-        image: localhost:5000/configo_fe_035:registry
+        image: localhost:5000/configo_fe_061:registry
         command: ['sh', '-c', 'echo -e "{\n  \"CONFIGO_BE_HOST\":\"161.97.143.5\",\n  \"CONFIGO_BE_PORT\":\"23500\"\n}" > /usr/local/apache2/htdocs/assets/env.txt && /usr/local/apache2/bin/apachectl start && chmod -R 755 /usr/local/apache2/htdocs && while :; do echo "."; sleep 5 ; done']
         imagePullPolicy: IfNotPresent
         ports:
@@ -52,7 +52,7 @@ spec:
     spec:
       containers:
       - name: configius-be
-        image: localhost:5000/configo_be_028:registry
+        image: localhost:5000/configo_be_061:registry
         imagePullPolicy: IfNotPresent
         env:
         - name: ENV_LOG_ACTIVE_SINCE_MINUTES
