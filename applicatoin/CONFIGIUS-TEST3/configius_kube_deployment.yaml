@@ -26,7 +26,7 @@ spec:
       containers:
       - name: configius-fe
         image: localhost:5000/configo_fe_035:registry
-        command: ['sh', '-c', 'echo -e "{\n  \"CONFIGO_BE_HOST\":\"161.97.143.5\",\n  \"CONFIGO_BE_PORT\":\"23300\"\n}" > /usr/local/apache2/htdocs/assets/env.txt && /usr/local/apache2/bin/apachectl start && chmod -R 755 /usr/local/apache2/htdocs && while :; do echo "."; sleep 5 ; done']
+        command: ['sh', '-c', 'echo -e "{\n  \"CONFIGO_BE_HOST\":\"161.97.143.5\",\n  \"CONFIGO_BE_PORT\":\"23400\"\n}" > /usr/local/apache2/htdocs/assets/env.txt && /usr/local/apache2/bin/apachectl start && chmod -R 755 /usr/local/apache2/htdocs && while :; do echo "."; sleep 5 ; done']
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
@@ -56,7 +56,7 @@ spec:
         imagePullPolicy: IfNotPresent
         env:
         - name: ENV_LOG_ACTIVE_SINCE_MINUTES
-          value: "130"
+          value: "131"
         - name: ENV_GIT_WORK_DIR
           value: "/tmp"
         - name: ENV_GIT_REPONAME
@@ -81,7 +81,7 @@ metadata:
 spec:
   ports:
     - name: "4200"
-      port:  24300
+      port:  24400
       targetPort: 80
   type: LoadBalancer
   externalIPs:
@@ -99,7 +99,7 @@ metadata:
 spec:
   ports:
     - name: "3000"
-      port: 23300 
+      port: 23400 
       targetPort: 3000
   type: LoadBalancer
   externalIPs:
